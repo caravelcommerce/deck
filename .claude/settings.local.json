@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(go build:*)",
+      "Bash(find:*)"
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+version: 2.4.9-alpha3
+
+# PHP Configuration
+php:
+  version: 8.3
+  extensions:
+    - bcmath
+    - gd
+    - intl
+    - mbstring
+    - pdo_mysql
+    - soap
+    - sockets
+    - xsl
+    - zip
+    - opcache
+
+# Nginx Configuration
+nginx:
+  version: 1.28
+  configuration:
+    client_max_body_size: 64M
+    fastcgi_read_timeout: 600
+    fastcgi_connect_timeout: 600
+
+# MariaDB Configuration
+mariadb:
+  version: 11.4
+  configuration:
+    max_connections: 500
+    innodb_buffer_pool_size: 1G
+    innodb_log_file_size: 256M
+    max_allowed_packet: 256M
+
+# OpenSearch Configuration
+opensearch:
+  version: 3
+  configuration:
+    cluster.name: magento-cluster
+    network.host: 0.0.0.0
+    discovery.type: single-node
+    OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+    DISABLE_SECURITY_PLUGIN: "true"
+
+# Redis Configuration
+redis:
+  version: 7.4
+  configuration:
+    maxmemory: 256mb
+    maxmemory-policy: allkeys-lru
+    appendonly: "yes"
+
+# RabbitMQ Configuration
+rabbitmq:
+  version: 4.1
+  configuration:
+    RABBITMQ_DEFAULT_USER: guest
+    RABBITMQ_DEFAULT_PASS: guest

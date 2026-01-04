@@ -1,0 +1,5 @@
+# Configuração Mínima - Deck para Magento 2
+# Copie como 'deck.yaml' na raiz do seu projeto
+
+project: meu-projeto
+magento: 2.4.8-p3

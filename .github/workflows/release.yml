@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build binaries
+        run: |
+          # Linux AMD64
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X main.Version=${{ steps.get_version.outputs.VERSION }}" -o deck-linux-amd64
+
+          # Linux ARM64
+          GOOS=linux GOARCH=arm64 go build -ldflags "-X main.Version=${{ steps.get_version.outputs.VERSION }}" -o deck-linux-arm64
+
+          # macOS AMD64 (Intel)
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.Version=${{ steps.get_version.outputs.VERSION }}" -o deck-darwin-amd64
+
+          # macOS ARM64 (Apple Silicon)
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.Version=${{ steps.get_version.outputs.VERSION }}" -o deck-darwin-arm64
+
+          # Torna os binários executáveis
+          chmod +x deck-*
+
+      - name: Create checksums
+        run: |
+          sha256sum deck-linux-amd64 > deck-linux-amd64.sha256
+          sha256sum deck-linux-arm64 > deck-linux-arm64.sha256
+          sha256sum deck-darwin-amd64 > deck-darwin-amd64.sha256
+          sha256sum deck-darwin-arm64 > deck-darwin-arm64.sha256
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            deck-linux-amd64
+            deck-linux-amd64.sha256
+            deck-linux-arm64
+            deck-linux-arm64.sha256
+            deck-darwin-amd64
+            deck-darwin-amd64.sha256
+            deck-darwin-arm64
+            deck-darwin-arm64.sha256
+          body: |
+            ## Installation
+
+            ### Quick Install (macOS and Linux)
+            ```bash
+            curl -fsSL https://raw.githubusercontent.com/caravelcommerce/deck/main/scripts/install.sh | bash
+            ```
+
+            ### Manual Install
+
+            Download the appropriate binary for your platform:
+
+            - **Linux AMD64**: `deck-linux-amd64`
+            - **Linux ARM64**: `deck-linux-arm64`
+            - **macOS Intel**: `deck-darwin-amd64`
+            - **macOS Apple Silicon**: `deck-darwin-arm64`
+
+            Make it executable and move to your PATH:
+            ```bash
+            chmod +x deck-*
+            sudo mv deck-* /usr/local/bin/deck
+            ```
+
+            ## What's Changed
+
+            See the [CHANGELOG.md](https://github.com/caravelcommerce/deck/blob/main/CHANGELOG.md) for details.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,66 @@
+# Deck - Magento 2 Development Environment
+# Configuração do ambiente Docker para Magento 2
+
+# Nome do projeto (usado no domínio: {project}.test)
+project: demo
+
+# Versão do Magento (auto-detecta requisitos de software)
+magento: 2.4.8-p3
+
+# ============================================================
+# Serviços (Opcional - sobrescreve auto-detecção)
+# ============================================================
+
+# PHP
+# php:
+#   version: 8.3
+#   extensions:
+#     - bcmath
+#     - gd
+#     - intl
+#     - mbstring
+#     - pdo_mysql
+#     - soap
+#     - xsl
+#     - zip
+#     - opcache
+#     - xdebug       # Adicionar Xdebug
+#     - openswoole   # Adicionar Swoole
+
+# Nginx
+# nginx:
+#   version: 1.28
+#   configuration:
+#     client_max_body_size: 100M
+
+# MariaDB
+# mariadb:
+#   version: 11.4
+#   configuration:
+#     max_connections: 500
+#     innodb_buffer_pool_size: 1G
+
+# OpenSearch
+# opensearch:
+#   version: 3
+#   configuration:
+#     cluster.name: magento-cluster
+
+# Redis
+# redis:
+#   version: 7.4
+#   configuration:
+#     maxmemory: 256mb
+
+# RabbitMQ
+# rabbitmq:
+#   version: 4.1
+
+# Node.js (para build tools)
+# node:
+#   version: 20
+
+# Swoole HTTP Server (API assíncrona em https://api.{project}.test)
+# swoole:
+#   enabled: true
+#   port: 9501
