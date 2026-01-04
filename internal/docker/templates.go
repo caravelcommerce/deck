@@ -13,21 +13,21 @@ const dockerComposeTemplate = `version: '3.8'
 
 services:
   nginx:
-    image: nginx:{{.Nginx}}-alpine
-    container_name: {{.Name}}_nginx
+    image: nginx:{{.GetNginxVersion}}-alpine
+    container_name: {{.Project}}_nginx
     volumes:
       - ../:/var/www/html:cached
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
-      - {{.Name}}_network
+      - {{.Project}}_network
       - traefik_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.{{.Name}}.rule=Host(` + "`{{.Name}}.test`" + `)"
-      - "traefik.http.routers.{{.Name}}.entrypoints=websecure"
-      - "traefik.http.routers.{{.Name}}.tls=true"
-      - "traefik.http.services.{{.Name}}.loadbalancer.server.port=80"
+      - "traefik.http.routers.{{.Project}}.rule=Host(` + "`{{.Project}}.test`" + `)"
+      - "traefik.http.routers.{{.Project}}.entrypoints=websecure"
+      - "traefik.http.routers.{{.Project}}.tls=true"
+      - "traefik.http.services.{{.Project}}.loadbalancer.server.port=80"
     depends_on:
       - php
 
@@ -35,28 +35,28 @@ services:
     build:
       context: ./php
       args:
-        PHP_VERSION: {{.PHP}}
-        INSTALL_OPENSWOOLE: {{.OpenSwoole}}
-    container_name: {{.Name}}_php
+        PHP_VERSION: {{.GetPHPVersion}}
+        INSTALL_OPENSWOOLE: {{.IsSwooleEnabled}}
+    container_name: {{.Project}}_php
     volumes:
       - ../:/var/www/html:cached
       - ./php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:ro
     networks:
-      - {{.Name}}_network{{if gt .SwoolePort 0}}
+      - {{.Project}}_network{{if gt .SwoolePort 0}}
       - traefik_network{{end}}
     environment:
-      - PHP_IDE_CONFIG=serverName={{.Name}}{{if gt .SwoolePort 0}}
+      - PHP_IDE_CONFIG=serverName={{.Project}}{{if gt .SwoolePort 0}}
     ports:
-      - "{{.SwoolePort}}:{{.SwoolePort}}"
+      - "{{.GetSwoolePort}}:{{.GetSwoolePort}}"
     labels:
       - "traefik.enable=true"
       # Swoole HTTP Server on api subdomain
-      - "traefik.http.routers.{{.Name}}-swoole.rule=Host(` + "`api.{{.Name}}.test`" + `)"
-      - "traefik.http.routers.{{.Name}}-swoole.entrypoints=websecure"
-      - "traefik.http.routers.{{.Name}}-swoole.tls=true"
-      - "traefik.http.routers.{{.Name}}-swoole.service={{.Name}}-swoole"
-      - "traefik.http.services.{{.Name}}-swoole.loadbalancer.server.port={{.SwoolePort}}"{{end}}
+      - "traefik.http.routers.{{.Project}}-swoole.rule=Host(` + "`api.{{.Project}}.test`" + `)"
+      - "traefik.http.routers.{{.Project}}-swoole.entrypoints=websecure"
+      - "traefik.http.routers.{{.Project}}-swoole.tls=true"
+      - "traefik.http.routers.{{.Project}}-swoole.service={{.Project}}-swoole"
+      - "traefik.http.services.{{.Project}}-swoole.loadbalancer.server.port={{.GetSwoolePort}}"{{end}}
     depends_on:
       - mariadb
       - redis
@@ -64,8 +64,8 @@ services:
       - rabbitmq
 
   mariadb:
-    image: mariadb:{{.MariaDB}}
-    container_name: {{.Name}}_mariadb
+    image: mariadb:{{.GetMariaDBVersion}}
+    container_name: {{.Project}}_mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: magento
@@ -75,12 +75,12 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./mariadb/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
     networks:
-      - {{.Name}}_network
+      - {{.Project}}_network
     command: --max_allowed_packet=256M
 
   opensearch:
-    image: opensearchproject/opensearch:{{.OpenSearch}}
-    container_name: {{.Name}}_opensearch
+    image: opensearchproject/opensearch:{{.GetOpenSearchVersion}}
+    container_name: {{.Project}}_opensearch
     environment:
       - discovery.type=single-node
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -88,29 +88,29 @@ services:
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     networks:
-      - {{.Name}}_network
+      - {{.Project}}_network
 
   redis:
-    image: redis:{{.Redis}}-alpine
-    container_name: {{.Name}}_redis
+    image: redis:{{.GetRedisVersion}}-alpine
+    container_name: {{.Project}}_redis
     volumes:
       - redis_data:/data
     networks:
-      - {{.Name}}_network
+      - {{.Project}}_network
 
   rabbitmq:
-    image: rabbitmq:{{.RabbitMQ}}-management-alpine
-    container_name: {{.Name}}_rabbitmq
+    image: rabbitmq:{{.GetRabbitMQVersion}}-management-alpine
+    container_name: {{.Project}}_rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - {{.Name}}_network
+      - {{.Project}}_network
 
 networks:
-  {{.Name}}_network:
+  {{.Project}}_network:
     driver: bridge
   traefik_network:
     external: true
@@ -165,7 +165,7 @@ const nginxDefaultConfTemplate = `upstream fastcgi_backend {
 
 server {
     listen 80;
-    server_name {{.Name}}.test;
+    server_name {{.Project}}.test;
 
     set $MAGE_ROOT /var/www/html;
     set $MAGE_MODE developer;
