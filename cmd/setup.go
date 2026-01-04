@@ -116,7 +116,6 @@ func runSetup(cmd *cobra.Command, args []string) error {
 	}
 
 	// Create .deck directory
-	deckDir := filepath.Join(cwd, ".deck")
 	if err := os.MkdirAll(deckDir, 0755); err != nil {
 		return fmt.Errorf("failed to create .deck directory: %w", err)
 	}
@@ -149,13 +148,13 @@ func runSetup(cmd *cobra.Command, args []string) error {
 
 	fmt.Println("\n✨ Setup completed successfully!")
 	fmt.Printf("\nYour project will be available at: https://%s.test\n", cfg.Project)
-	if cfg.SwoolePort > 0 {
+	if cfg.GetSwoolePort() > 0 {
 		fmt.Printf("Swoole API will be available at: https://api.%s.test\n", cfg.Project)
 	}
 	fmt.Println("\nNext steps:")
 	fmt.Println("  1. Run 'deck start' to start the environment")
 	fmt.Printf("  2. Access your site at https://%s.test\n", cfg.Project)
-	if cfg.SwoolePort > 0 {
+	if cfg.GetSwoolePort() > 0 {
 		fmt.Printf("  3. Start Swoole server: deck bin/magento swoole:server:start\n")
 		fmt.Printf("  4. Access Swoole API at https://api.%s.test\n", cfg.Project)
 		fmt.Printf("  5. Run 'deck bin/magento' to execute other Magento commands\n")

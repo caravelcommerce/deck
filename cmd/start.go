@@ -60,13 +60,13 @@ func runStart(cmd *cobra.Command, args []string) error {
 
 	fmt.Println("\n✅ Environment started successfully!")
 	fmt.Printf("\n🌐 Your site is available at: https://%s.test\n", cfg.Project)
-	if cfg.SwoolePort > 0 {
-		fmt.Printf("🚀 Swoole API endpoint: https://api.%s.test (port %d)\n", cfg.Project, cfg.SwoolePort)
+	if cfg.GetSwoolePort() > 0 {
+		fmt.Printf("🚀 Swoole API endpoint: https://api.%s.test (port %d)\n", cfg.Project, cfg.GetSwoolePort())
 		fmt.Printf("   Start with: deck bin/magento swoole:server:start\n")
 	}
 	fmt.Println("\nServices:")
 	fmt.Printf("  - Web: https://%s.test\n", cfg.Project)
-	if cfg.SwoolePort > 0 {
+	if cfg.GetSwoolePort() > 0 {
 		fmt.Printf("  - Swoole API: https://api.%s.test\n", cfg.Project)
 	}
 	fmt.Println("  - Traefik Dashboard: http://localhost:8080")
