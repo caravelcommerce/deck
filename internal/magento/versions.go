@@ -6,22 +6,26 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/caravelcommerce/deck/internal/config"
 	"gopkg.in/yaml.v3"
 )
 
 //go:embed versions/*.yaml
 var versionsFS embed.FS
 
+// ServiceVersion representa uma versão de serviço no arquivo YAML
+type ServiceVersion struct {
+	Version string `yaml:"version"`
+}
+
 // MagentoVersion estrutura completa de uma versão do Magento
 type MagentoVersion struct {
-	Version    string              `yaml:"version"`
-	PHP        *config.PHPConfig        `yaml:"php"`
-	Nginx      *config.NginxConfig      `yaml:"nginx"`
-	MariaDB    *config.MariaDBConfig    `yaml:"mariadb"`
-	OpenSearch *config.OpenSearchConfig `yaml:"opensearch"`
-	Redis      *config.RedisConfig      `yaml:"redis"`
-	RabbitMQ   *config.RabbitMQConfig   `yaml:"rabbitmq"`
+	Version    string          `yaml:"version"`
+	PHP        *ServiceVersion `yaml:"php"`
+	Nginx      *ServiceVersion `yaml:"nginx"`
+	MariaDB    *ServiceVersion `yaml:"mariadb"`
+	OpenSearch *ServiceVersion `yaml:"opensearch"`
+	Redis      *ServiceVersion `yaml:"redis"`
+	RabbitMQ   *ServiceVersion `yaml:"rabbitmq"`
 }
 
 // MagentoRequirements versão simplificada para backward compatibility
