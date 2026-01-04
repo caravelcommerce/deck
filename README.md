@@ -29,38 +29,20 @@ sudo apt install docker.io docker-compose
 
 ## Instalação
 
-### Instalação para Repositório Privado
+### Instalação Rápida (Recomendado)
 
-Como este é um repositório privado, você precisa de um GitHub Personal Access Token para instalar.
-
-#### 1. Crie um Personal Access Token
-
-1. Acesse: https://github.com/settings/tokens/new
-2. Dê um nome (ex: "Deck CLI")
-3. Selecione a permissão: **repo** (Full control of private repositories)
-4. Clique em "Generate token"
-5. Copie o token gerado
-
-#### 2. Instale o Deck
+Para macOS e Linux, execute o seguinte comando no terminal:
 
 ```bash
-# Defina o token (temporário - apenas para esta sessão)
-export GITHUB_TOKEN=seu_token_aqui
-
-# Execute o instalador
-curl -fsSL https://raw.githubusercontent.com/caravelcommerce/deck/main/scripts/install-private.sh | bash
+curl -fsSL https://raw.githubusercontent.com/caravelcommerce/deck/main/scripts/install.sh | bash
 ```
 
-**OU** defina o token permanentemente:
-
-```bash
-# Adicione ao seu .bashrc ou .zshrc
-echo 'export GITHUB_TOKEN=seu_token_aqui' >> ~/.bashrc
-source ~/.bashrc
-
-# Execute o instalador
-curl -fsSL https://raw.githubusercontent.com/caravelcommerce/deck/main/scripts/install-private.sh | bash
-```
+Este comando irá:
+- Detectar automaticamente seu sistema operacional e arquitetura
+- Baixar a versão mais recente do Deck
+- Instalar o binário em `~/.local/bin/deck`
+- Configurar o PATH automaticamente
+- Verificar a instalação
 
 Após a instalação, recarregue seu shell:
 
