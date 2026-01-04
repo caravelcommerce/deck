@@ -1,8 +1,11 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/caravelcommerce/deck/internal/magento"
 	"gopkg.in/yaml.v3"
@@ -287,4 +290,55 @@ func CreateDeckYAML(path, projectName, magentoVersion string) error {
 func DeckYAMLExists(projectPath string) bool {
 	_, err := os.Stat(projectPath)
 	return err == nil
+}
+
+// ComposerJSON estrutura para ler o composer.json
+type ComposerJSON struct {
+	Require map[string]string `json:"require"`
+}
+
+// DetectMagentoVersion detecta a versão do Magento a partir do composer.json
+func DetectMagentoVersion(projectPath string) (string, error) {
+	composerPath := filepath.Join(projectPath, "composer.json")
+
+	// Verifica se o composer.json existe
+	if _, err := os.Stat(composerPath); os.IsNotExist(err) {
+		return "", fmt.Errorf("composer.json not found in project directory")
+	}
+
+	// Lê o composer.json
+	data, err := os.ReadFile(composerPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to read composer.json: %w", err)
+	}
+
+	// Parse do JSON
+	var composer ComposerJSON
+	if err := json.Unmarshal(data, &composer); err != nil {
+		return "", fmt.Errorf("failed to parse composer.json: %w", err)
+	}
+
+	// Procura pela versão do Magento
+	// Pode estar em magento/product-community-edition ou magento/product-enterprise-edition
+	version := ""
+	if v, ok := composer.Require["magento/product-community-edition"]; ok {
+		version = v
+	} else if v, ok := composer.Require["magento/product-enterprise-edition"]; ok {
+		version = v
+	}
+
+	if version == "" {
+		return "", fmt.Errorf("Magento version not found in composer.json")
+	}
+
+	// Remove caracteres especiais de versão do composer (^, ~, *, etc)
+	version = strings.TrimPrefix(version, "^")
+	version = strings.TrimPrefix(version, "~")
+	version = strings.TrimPrefix(version, ">=")
+	version = strings.TrimPrefix(version, "<=")
+	version = strings.TrimPrefix(version, ">")
+	version = strings.TrimPrefix(version, "<")
+	version = strings.TrimSpace(version)
+
+	return version, nil
 }

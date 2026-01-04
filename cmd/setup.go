@@ -9,7 +9,6 @@ import (
 
 	"github.com/caravelcommerce/deck/internal/config"
 	"github.com/caravelcommerce/deck/internal/docker"
-	"github.com/caravelcommerce/deck/internal/magento"
 	"github.com/caravelcommerce/deck/internal/traefik"
 	"github.com/spf13/cobra"
 )
@@ -50,7 +49,7 @@ func runSetup(cmd *cobra.Command, args []string) error {
 		fmt.Println("📋 deck.yaml not found. Attempting to detect Magento version from composer.json...")
 
 		// Tenta detectar a versão do Magento
-		magentoVersion, err := magento.DetectMagentoVersion(cwd)
+		magentoVersion, err := config.DetectMagentoVersion(cwd)
 		if err != nil {
 			return fmt.Errorf("failed to detect Magento version: %w\n\nPlease create a deck.yaml file manually with the Magento version", err)
 		}
